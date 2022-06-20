@@ -40,7 +40,7 @@ class Berkeleygw(MakefilePackage):
 
     depends_on('blas')
     depends_on('lapack')
-    depends_on('scalapack')
+    #depends_on('scalapack')
     depends_on('mpi', when='+mpi')
     depends_on('hdf5+fortran+hl', when='+hdf5~mpi')
     depends_on('hdf5+fortran+hl+mpi', when='+hdf5+mpi')
@@ -84,8 +84,12 @@ class Berkeleygw(MakefilePackage):
         tar('-x', '-f', self.stage.archive_file, '--strip-components=1')
 
         # get generic arch.mk template
-        copy(join_path(self.stage.source_path, 'config', 'generic.mpi.linux.mk'),
-             'arch.mk')
+        if '+mpi' in spec:
+            copy(join_path(self.stage.source_path, 'config', 'generic.mpi.linux.mk'),
+                 'arch.mk')
+        else:
+            copy(join_path(self.stage.source_path, 'config', 'generic.serial.linux_with_hdf5.mk'),
+                 'arch.mk')
 
         if self.version == Version('2.1'):
             # don't try to install missing file
@@ -122,7 +126,11 @@ class Berkeleygw(MakefilePackage):
             paraflags.append('-DOMP')
             spec.compiler_flags['fflags'].append(self.compiler.openmp_flag)
 
-        buildopts.append('C_PARAFLAG=-DPARA')
+        if '+mpi' in spec:
+            buildopts.append('C_PARAFLAG=-DPARA')
+        #else:
+        #    buildopts.append('C_PARAFLAG=')
+
         buildopts.append('PARAFLAG=%s' % ' '.join(paraflags))
 
         debugflag = ""
@@ -132,8 +140,9 @@ class Berkeleygw(MakefilePackage):
             debugflag += "-DVERBOSE "
         buildopts.append('DEBUGFLAG=%s' % debugflag)
 
-        buildopts.append('LINK=%s' % spec['mpi'].mpifc)
-        buildopts.append('C_LINK=%s' % spec['mpi'].mpicxx)
+        if '+mpi' in spec:
+            buildopts.append('LINK=%s' % spec['mpi'].mpifc)
+            buildopts.append('C_LINK=%s' % spec['mpi'].mpicxx)
 
         buildopts.append('FOPTS=%s' % ' '.join(spec.compiler_flags['fflags']))
         buildopts.append('C_OPTS=%s' % ' '.join(spec.compiler_flags['cflags']))
@@ -162,6 +171,9 @@ class Berkeleygw(MakefilePackage):
             buildopts.append('BLACS=%s' % spec['scalapack'].libs.ld_flags)
             buildopts.append('FOPTS=%s' % ' '.join(spec.compiler_flags['fflags']))
         elif spec.satisfies('%gcc'):
+            if '~mpi' in spec:
+                buildopts.append('LINK=%s' % 'gfortran')
+                buildopts.append('C_LINK=%s' % 'g++')
             c_flags = '-std=c99'
             cxx_flags = '-std=c++0x'
             f90_flags = "-ffree-form -ffree-line-length-none -fno-second-underscore"
@@ -171,10 +183,17 @@ class Berkeleygw(MakefilePackage):
                 f90_flags += ' -fallow-argument-mismatch'
             buildopts.append('COMPFLAG=-DGNU')
             buildopts.append('MOD_OPT=-J ')
-            buildopts.append('F90free=%s %s' % (spec['mpi'].mpifc, f90_flags))
+            if '+mpi' in spec:
+                buildopts.append('F90free=%s %s' % (spec['mpi'].mpifc, f90_flags))
+            else:
+                buildopts.append('F90free=%s %s' % ('gfortran', f90_flags))
             buildopts.append('FCPP=cpp -C -nostdinc')
-            buildopts.append('C_COMP=%s %s' % (spec['mpi'].mpicc, c_flags))
-            buildopts.append('CC_COMP=%s %s' % (spec['mpi'].mpicxx, cxx_flags))
+            if '+mpi' in spec:
+                buildopts.append('C_COMP=%s %s' % (spec['mpi'].mpicc, c_flags))
+                buildopts.append('CC_COMP=%s %s' % (spec['mpi'].mpicxx, cxx_flags))
+            else:
+                buildopts.append('C_COMP=%s %s' % ('gcc', c_flags))
+                buildopts.append('CC_COMP=%s %s' % ('g++', cxx_flags))
             buildopts.append('FOPTS=%s' % ' '.join(spec.compiler_flags['fflags']))
         elif spec.satisfies('%fj'):
             c_flags = '-std=c99'
