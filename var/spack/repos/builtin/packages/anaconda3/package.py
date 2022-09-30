@@ -20,7 +20,9 @@ class Anaconda3(Package):
     url      = "https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh"
 
     maintainers = ['ajkotobi']
-
+    
+    version('2021.05', sha256='2751ab3d678ff0277ae80f9e8a74f218cfc70fe9a9cdc7bb1c137d7e47e33d53', expand=False)
+    version('2020.11', sha256='cf2ff493f11eaad5d09ce2b4feaa5ea90db5174303d5b3fe030e16d29aeef7de', expand=False)
     version('2021.05', sha256='2751ab3d678ff0277ae80f9e8a74f218cfc70fe9a9cdc7bb1c137d7e47e33d53', expand=False)
     version('2020.11', sha256='cf2ff493f11eaad5d09ce2b4feaa5ea90db5174303d5b3fe030e16d29aeef7de', expand=False)
     version('2020.07', sha256='38ce717758b95b3bd0b1797cc6ccfb76f29a90c25bdfa50ee45f11e583edfdbf', expand=False)
