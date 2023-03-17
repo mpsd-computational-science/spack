@@ -22,6 +22,10 @@ class BigdftSpred(AutotoolsPackage):
     version("1.8.2", sha256="042e5a3b478b1a4c050c450a9b1be7bcf8e13eacbce4759b7f2d79268b298d61")
     version("1.8.1", sha256="e09ff0ba381f6ffbe6a3c0cb71db5b73117874beb41f22a982a7e5ba32d018b3")
 
+    depends_on("autoconf", type="build")
+    depends_on("automake", type="build")
+    depends_on("libtool", type="build")
+
     variant("mpi", default=True, description="Enable MPI support")
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("scalapack", default=True, description="Enable SCALAPACK support")
@@ -41,13 +45,7 @@ class BigdftSpred(AutotoolsPackage):
         depends_on("bigdft-psolver@{0}".format(vers), when="@{0}".format(vers))
         depends_on("bigdft-core@{0}".format(vers), when="@{0}".format(vers))
 
-    build_directory = "spred"
-
-    def autoreconf(self, spec, prefix):
-        autoreconf = which("autoreconf")
-
-        with working_dir(self.build_directory):
-            autoreconf("-fi")
+    configure_directory = "spred"
 
     def configure_args(self):
         spec = self.spec
@@ -70,7 +68,7 @@ class BigdftSpred(AutotoolsPackage):
             "FCFLAGS=%s" % " ".join(openmp_flag),
             "--with-ext-linalg=%s" % " ".join(linalg),
             "--with-pyyaml-path=%s" % pyyaml,
-            "--with-futile-libs=%s" % spec["bigdft-futile"].prefix.lib,
+            "--with-futile-libs=%s" % spec["bigdft-futile"].libs.ld_flags,
             "--with-futile-incs=%s" % spec["bigdft-futile"].headers.include_flags,
             "--with-psolver-libs=%s" % spec["bigdft-psolver"].prefix.lib,
             "--with-psolver-incs=%s" % spec["bigdft-psolver"].headers.include_flags,
