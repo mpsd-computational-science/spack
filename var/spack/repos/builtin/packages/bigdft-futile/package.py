@@ -28,6 +28,10 @@ class BigdftFutile(AutotoolsPackage, CudaPackage):
     variant("mpi", default=True, description="Enable MPI support")
     variant("openmp", default=True, description="Enable OpenMP support")
 
+    depends_on("autoconf", type="build")
+    depends_on("automake", type="build")
+    depends_on("libtool", type="build")
+
     depends_on("python@:2.8", type=("build", "run"), when="@:1.8.3")
     depends_on("python@3.0:", type=("build", "run"), when="@1.9.0:")
     depends_on("python@3.0:", type=("build", "run"), when="@develop")
@@ -38,13 +42,7 @@ class BigdftFutile(AutotoolsPackage, CudaPackage):
     depends_on("py-pyyaml")
     depends_on("mpi", when="+mpi")
 
-    build_directory = "futile"
-
-    def autoreconf(self, spec, prefix):
-        autoreconf = which("autoreconf")
-
-        with working_dir(self.build_directory):
-            autoreconf("-fi")
+    configure_directory = "futile"
 
     def configure_args(self):
         spec = self.spec

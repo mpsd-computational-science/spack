@@ -27,6 +27,11 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("scalapack", default=True, description="Enable SCALAPACK support")
 
+    depends_on("autoconf", type="build")
+    depends_on("automake", type="build")
+    depends_on("libtool", type="build")
+
+
     depends_on("python@:2.8", type=("build", "run"), when="@:1.8.3")
     depends_on("python@3.0:", type=("build", "run"), when="@1.9.0:")
     depends_on("python@3.0:", type=("build", "run"), when="@develop")
@@ -42,13 +47,7 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
     for vers in ["1.8.3", "1.9.0", "1.9.1", "1.9.2", "develop"]:
         depends_on("bigdft-atlab@{0}".format(vers), when="@{0}".format(vers))
 
-    build_directory = "psolver"
-
-    def autoreconf(self, spec, prefix):
-        autoreconf = which("autoreconf")
-
-        with working_dir(self.build_directory):
-            autoreconf("-fi")
+    configure_directory = "psolver"
 
     def configure_args(self):
         spec = self.spec
@@ -71,7 +70,7 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
             "FCFLAGS=%s" % " ".join(openmp_flag),
             "--with-ext-linalg=%s" % " ".join(linalg),
             "--with-pyyaml-path=%s" % pyyaml,
-            "--with-futile-libs=%s" % spec["bigdft-futile"].prefix.lib,
+            "--with-futile-libs=%s" % spec["bigdft-futile"].libs.ld_flags,
             "--with-futile-incs=%s" % spec["bigdft-futile"].headers.include_flags,
             "--with-moduledir=%s" % prefix.include,
             "--prefix=%s" % prefix,
