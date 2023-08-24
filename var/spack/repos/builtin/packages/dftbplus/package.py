@@ -22,7 +22,7 @@ class Dftbplus(MakefilePackage):
     version("21.2", tag="21.2", submodules=True)
     version("21.1", tag="21.1", submodules=True)
     version("20.2", tag="20.2", submodules=True)
-    version("20.1", tag="20.1", submodules=True)
+    version("20.1", tag="20.1", submodules=True)  # This and higher version uses Cmake
     version('19.1', tag='19.1', submodules=True)
     # version("19.1", sha256="4d07f5c6102f06999d8cfdb1d17f5b59f9f2b804697f14b3bc562e3ea094b8a8")
 
