@@ -45,7 +45,7 @@ class Dftbplus(MakefilePackage, CMakePackage):
     variant(
         "gpu",
         default=False,
-        description="Use the MAGMA library " "for GPU accelerated computation",
+        description="Use the MAGMA library for GPU accelerated computation",
     )
 
     variant(
@@ -58,7 +58,7 @@ class Dftbplus(MakefilePackage, CMakePackage):
     variant(
         "sockets",
         default=False,
-        description="Whether the socket library " "(external control) should be linked",
+        description="Whether the socket library (external control) should be linked",
     )
 
     variant("arpack", default=False, description="Use ARPACK for excited state DFTB functionality")
@@ -74,18 +74,18 @@ class Dftbplus(MakefilePackage, CMakePackage):
     variant(
         "dftd3",
         default=False,
-        description="Use DftD3 dispersion library " "(if you need this dispersion model)",
+        description="Use DftD3 dispersion library (if you need this dispersion model)",
     )
     variant(
         "api",
         default=True,
-        description="Build the API library " "(if you need to link to DFTB+ from other codes)",
+        description="Build the API library (if you need to link to DFTB+ from other codes)",
         when="build_system=cmake",
     )
     variant(
         "openmp",
         default=True,
-        description="Build with OpenMP support " "(if you need to use OpenMP parallelization)",
+        description="Build with OpenMP support (if you need to use OpenMP parallelization)",
     )
     variant(
         "sharedlibs",
