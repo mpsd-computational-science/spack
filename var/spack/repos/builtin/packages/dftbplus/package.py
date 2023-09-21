@@ -24,6 +24,8 @@ class Dftbplus(MakefilePackage, CMakePackage):
     version("20.2", tag="20.2", submodules=True)
     version("20.1", tag="20.1", submodules=True)  # This and higher version uses Cmake
     version("19.1", tag="19.1", submodules=True)
+    # dftbplus package uses git submodules for important parts of the package, like mpifx, mbd, fytest, and libnegf, these submodules aren't included in the release tar ball.
+    # Therefore, we clone the git repo and its submodules instead.
     # version("19.1", sha256="4d07f5c6102f06999d8cfdb1d17f5b59f9f2b804697f14b3bc562e3ea094b8a8")
 
     build_system(
