@@ -8,15 +8,31 @@ import os
 from spack.package import *
 
 
-class Dftbplus(MakefilePackage):
+class Dftbplus(MakefilePackage, CMakePackage):
     """DFTB+ is an implementation of the
     Density Functional based Tight Binding (DFTB) method,
     containing many extensions to the original method."""
 
     homepage = "https://www.dftbplus.org"
-    url = "https://github.com/dftbplus/dftbplus/archive/19.1.tar.gz"
+    # url = "https://github.com/dftbplus/dftbplus/archive/19.1.tar.gz"
+    git = "https://github.com/dftbplus/dftbplus.git"
+    version("23.1", tag="23.1", submodules=True)
+    version("22.2", tag="22.2", submodules=True)
+    version("22.1", tag="22.1", submodules=True)
+    version("21.2", tag="21.2", submodules=True)
+    version("21.1", tag="21.1", submodules=True)
+    version("20.2", tag="20.2", submodules=True)
+    version("20.1", tag="20.1", submodules=True)  # This and higher version uses Cmake
+    version("19.1", tag="19.1", submodules=True)
+    # dftbplus package uses git submodules for important parts of the package, like mpifx, mbd, fytest, and libnegf, these submodules aren't included in the release tar ball.
+    # Therefore, we clone the git repo and its submodules instead.
+    # version("19.1", sha256="4d07f5c6102f06999d8cfdb1d17f5b59f9f2b804697f14b3bc562e3ea094b8a8")
 
-    version("19.1", sha256="4d07f5c6102f06999d8cfdb1d17f5b59f9f2b804697f14b3bc562e3ea094b8a8")
+    build_system(
+        conditional("cmake", when="@20.1:"),
+        conditional("makefile", when="@:19.1"),
+        default="cmake",
+    )
 
     resource(
         name="slakos",
@@ -31,7 +47,7 @@ class Dftbplus(MakefilePackage):
     variant(
         "gpu",
         default=False,
-        description="Use the MAGMA library " "for GPU accelerated computation",
+        description="Use the MAGMA library for GPU accelerated computation",
     )
 
     variant(
@@ -44,7 +60,7 @@ class Dftbplus(MakefilePackage):
     variant(
         "sockets",
         default=False,
-        description="Whether the socket library " "(external control) should be linked",
+        description="Whether the socket library (external control) should be linked",
     )
 
     variant("arpack", default=False, description="Use ARPACK for excited state DFTB functionality")
@@ -60,7 +76,23 @@ class Dftbplus(MakefilePackage):
     variant(
         "dftd3",
         default=False,
-        description="Use DftD3 dispersion library " "(if you need this dispersion model)",
+        description="Use DftD3 dispersion library (if you need this dispersion model)",
+    )
+    variant(
+        "api",
+        default=True,
+        description="Build the API library (if you need to link to DFTB+ from other codes)",
+        when="build_system=cmake",
+    )
+    variant(
+        "openmp",
+        default=True,
+        description="Build with OpenMP support (if you need to use OpenMP parallelization)",
+    )
+    variant(
+        "sharedlibs",
+        default=False,
+        description="Build as shared library",
     )
 
     depends_on("lapack")
@@ -69,9 +101,15 @@ class Dftbplus(MakefilePackage):
     depends_on("mpi", when="+mpi")
     depends_on("elsi", when="+elsi")
     depends_on("magma", when="+gpu")
-    depends_on("arpack-ng", when="+arpack")
+    depends_on("arpack-ng", when="+arpack~mpi")
     depends_on("dftd3-lib@0.9.2", when="+dftd3")
+    depends_on("m4", type="build", when="@:19.1")
+    depends_on("python@3.2:", type=("build", "run"))
+    depends_on("py-numpy", type=("build", "run"))  # for tests
+    depends_on("cmake", type="build", when="@20.1:")
 
+
+class MakefileBuilder(spack.build_systems.makefile.MakefileBuilder):
     def edit(self, spec, prefix):
         """
         First, change the ROOT variable, because, for some reason,
@@ -160,3 +198,43 @@ class Dftbplus(MakefilePackage):
             )
 
             mconfig.filter("WITH_DFTD3 := .*", "WITH_DFTD3 := 1")
+
+
+class CMakeBuilder(spack.build_systems.cmake.CMakeBuilder):
+    def cmake_args(self):
+        # Note: dftbplus@20.1 uses plural form of the option names
+        #       (e.g. -DSCALAPACK_LIBRARIES)
+        # but dftbplus@20.2 onwards uses singular
+        #       (e.g. -DSCALAPACK_LIBRARY)
+        # and plural form is ignored.
+        # We set both inorder to be compatible with all versions.
+
+        spec = self.spec
+        lapack_libs = spec["lapack"].libs.joined(";")
+        blas_libs = spec["blas"].libs.joined(";")
+        args = [
+            self.define_from_variant("WITH_OPENMP", "openmp"),
+            self.define_from_variant("WITH_MPI", "mpi"),
+            self.define("LAPACK_FOUND", True),
+            self.define("LAPACK_INCLUDE_DIRS", spec["lapack"].prefix.include),
+            self.define("LAPACK_LIBRARIES", lapack_libs),
+            self.define("BLAS_FOUND", True),
+            self.define("BLAS_INCLUDE_DIRS", spec["blas"].prefix.include),
+            self.define("BLAS_LIBRARIES", blas_libs),
+            self.define("BLAS_LIBRARY", blas_libs),
+            self.define_from_variant("WITH_ELSI", "elsi"),
+            self.define_from_variant("WITH_GPU", "gpu"),
+            self.define_from_variant("WITH_TRANSPORT", "transport"),
+            self.define_from_variant("WITH_SOCKETS", "sockets"),
+            self.define_from_variant("WITH_ARPACK", "arpack"),
+            self.define_from_variant("WITH_DFTD3", "dftd3"),
+            self.define_from_variant("WITH_API", "api"),
+            self.define_from_variant("BUILD_SHARED_LIBS", "sharedlibs"),
+        ]
+        if "+mpi" in spec:
+            args.append(self.define("MPI_C_COMPILER", spec["mpi"].mpicc))
+            args.append(self.define("MPI_Fortran_COMPILER", spec["mpi"].mpifc))
+            args.append(self.define("SCALAPACK_LIBRARY", spec["scalapack"].libs.joined(";")))
+            args.append(self.define("SCALAPACK_LIBRARIES", spec["scalapack"].libs.joined(";")))
+            args.append(self.define("SCALAPACK_INCLUDE_DIR", spec["scalapack"].prefix.include))
+        return args
