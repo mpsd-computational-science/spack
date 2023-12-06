@@ -30,6 +30,7 @@ class BigdftLibabinit(AutotoolsPackage):
 
 
     variant("mpi", default=True, description="Enable MPI support")
+    variant("shared", default=True, description="Build shared libraries")
 
     depends_on("python@:2.8", type=("build", "run"), when="@:1.8.3")
     depends_on("python@3.0:", type=("build", "run"), when="@1.9.0:")
@@ -65,6 +66,8 @@ class BigdftLibabinit(AutotoolsPackage):
             "--with-moduledir=%s" % prefix.include,
             "--prefix=%s" % prefix,
         ]
+        if "+shared" in spec:
+            args.append("--enable-dynamic-libraries")
 
         if "+mpi" in spec:
             args.append("CC=%s" % spec["mpi"].mpicc)

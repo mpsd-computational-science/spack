@@ -27,6 +27,7 @@ class BigdftFutile(AutotoolsPackage, CudaPackage):
 
     variant("mpi", default=True, description="Enable MPI support")
     variant("openmp", default=True, description="Enable OpenMP support")
+    variant("shared", default=True, description="Build shared libraries")
 
     depends_on("autoconf", type="build")
     depends_on("automake", type="build")
@@ -64,6 +65,8 @@ class BigdftFutile(AutotoolsPackage, CudaPackage):
             "--with-pyyaml-path=%s" % pyyaml,
             "--prefix=%s" % prefix,
         ]
+        if "+shared" in spec:
+            args.append("--enable-dynamic-libraries")
 
         if "+openmp" in spec:
             args.append("--with-openmp")
