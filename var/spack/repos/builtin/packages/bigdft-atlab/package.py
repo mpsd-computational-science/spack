@@ -41,14 +41,24 @@ class BigdftAtlab(AutotoolsPackage):
         prefix = self.prefix
 
         fcflags = []
+        cflags = []
+        cxxflags = []
         if "+openmp" in spec:
             fcflags.append(self.compiler.openmp_flag)
 
         if self.spec.satisfies("%gcc@10:"):
             fcflags.append("-fallow-argument-mismatch")
 
+        if "+shared" in spec:
+            fcflags.append("-fPIC")
+            cflags.append("-fPIC")
+            cxxflags.append("-fPIC")
+
+
         args = [
             "FCFLAGS=%s" % " ".join(fcflags),
+            "CFLAGS=%s" % " ".join(cflags),
+            "CXXFLAGS=%s" % " ".join(cxxflags),
             "--with-futile-libs=%s" % spec["bigdft-futile"].libs.ld_flags,
             "--with-futile-incs=%s" % spec["bigdft-futile"].headers.include_flags+"/futile",
             "--with-moduledir=%s" % prefix.include,
