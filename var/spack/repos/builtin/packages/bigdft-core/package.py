@@ -26,6 +26,7 @@ class BigdftCore(AutotoolsPackage, CudaPackage):
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("scalapack", default=True, description="Enable SCALAPACK support")
     variant("openbabel", default=False, description="Enable detection of openbabel compilation")
+    variant("shared", default=True, description="Build shared libraries")
 
     depends_on("autoconf", type="build")
     depends_on("automake", type="build")
@@ -92,6 +93,8 @@ class BigdftCore(AutotoolsPackage, CudaPackage):
             "--prefix=%s" % prefix,
             "--without-etsf-io",
         ]
+        if "+shared" in spec:
+            args.append("--enable-dynamic-libraries")
 
         if "+mpi" in spec:
             args.append("CC=%s" % spec["mpi"].mpicc)
