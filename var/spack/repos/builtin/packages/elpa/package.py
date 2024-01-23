@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 import os
+import sys
 
 from spack.package import *
 
@@ -11,6 +12,7 @@ from spack.package import *
 # Please note that you can open issues on the github page of ELPA:
 # https://github.com/marekandreas/elpa/issues
 #
+
 
 
 class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
@@ -72,6 +74,9 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
     )
     conflicts("+mpi", when="+rocm", msg="ROCm support and MPI are not yet compatible")
 
+    with when("+openmp"):
+        phases = ["autoreconf", "configure", "build", "disable_openmp", "configure", "build", "install"]
+
     def url_for_version(self, version):
         return "https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/{0}/elpa-{0}.tar.gz".format(
             str(version)
@@ -104,6 +109,13 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
 
     build_directory = "spack-build"
     parallel = False
+
+    openmp_from_spec = True
+    # Disable openmp independent of spec. When `openmp_from_spec=True` the spec is used
+    # to determine if openmp support should be enabled. When `openmp_from_spec=False`
+    # openmp will be disabled independent of what is requested in the spec. This is used
+    # to force installation of openmp and non-openmpi variant under the same hash by
+    # re-running the configure/build/install phases twice.
 
     def configure_args(self):
         spec = self.spec
@@ -168,14 +180,17 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
         elif "@2021.05.001:" in self.spec:
             options.append("--disable-amd-gpu")
 
-        options += self.enable_or_disable("openmp")
+        if self.openmp_from_spec:
+            options += self.enable_or_disable("openmp")
+        else:
+            options.append("--disable-openmp")
 
         options += [
             "LDFLAGS={0}".format(spec["lapack"].libs.search_flags),
             "LIBS={0} {1}".format(spec["lapack"].libs.link_flags, spec["blas"].libs.link_flags),
         ]
 
-        if "+mpi" in self.spec:
+        if "+mpi" in spec:
             options += [
                 "CC={0}".format(spec["mpi"].mpicc),
                 "CXX={0}".format(spec["mpi"].mpicxx),
@@ -192,3 +207,7 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
         options.append("--without-threading-support-check-during-build")
 
         return options
+
+
+    def disable_openmp(self, spec, prefix):
+        self.openmp_from_spec = False
