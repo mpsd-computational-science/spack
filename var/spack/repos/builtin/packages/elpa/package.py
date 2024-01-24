@@ -75,7 +75,7 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
     conflicts("+mpi", when="+rocm", msg="ROCm support and MPI are not yet compatible")
 
     with when("+openmp"):
-        phases = ["autoreconf", "configure", "build", "disable_openmp", "configure", "build", "install"]
+        phases = ["autoreconf", "configure", "build", "install", "disable_openmp", "configure", "build", "install"]
 
     def url_for_version(self, version):
         return "https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/{0}/elpa-{0}.tar.gz".format(
