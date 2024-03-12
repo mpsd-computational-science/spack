@@ -1,0 +1,85 @@
+From c9b6416461284e064a1c511ec883db610da638ca Mon Sep 17 00:00:00 2001
+From: Philipp Friese <philipp.friese@in.tum.de>
+Date: Fri, 28 Jul 2023 14:47:24 +0200
+Subject: [PATCH] driver/linux: Update detection of cpus_*/cpumask_* functions
+
+Kernel 2.6.28 deprecated cpus_{setall,complement} in favour of cpumask_{setall,complement}.
+Kernel 6.3 removes cpumask_complement (commit 596ff4a09b8981790e15572e8e7bc904df5835e7).
+
+This commit adds an implementation of knem_cpumask_complement for kernels 6.3+
+based on the removed cpumask_complement.
+
+Separate the check for *_setall() since cpumask_setall() isn't removed.
+
+Signed-off-by: Brice Goglin <Brice.Goglin@inria.fr>
+---
+ driver/linux/check_kernel_headers.sh | 19 ++++++++++++++++++-
+ driver/linux/knem_hal.h              | 12 ++++++++++--
+ 2 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/driver/linux/check_kernel_headers.sh b/driver/linux/check_kernel_headers.sh
+index 4b4b9b3..28e357f 100755
+--- a/driver/linux/check_kernel_headers.sh
++++ b/driver/linux/check_kernel_headers.sh
+@@ -157,7 +157,7 @@ else
+   echo no
+ fi
+ 
+-# cpumask_complement deprecates cpus_complement in 2.6.27, and the latter is removed in 2.6.32
++# cpumask_complement deprecates cpus_complement in 2.6.28, cpus_complement is removed in 4.1, cpumask_complement is removed in 6.3
+ echo -n "  checking (in kernel headers) cpumask_complement() availability ... "
+ if grep cpumask_complement ${LINUX_HDR}/include/linux/cpumask.h > /dev/null ; then
+   echo "#define KNEM_HAVE_CPUMASK_COMPLEMENT 1" >> ${TMP_CHECKS_NAME}
+@@ -165,6 +165,23 @@ if grep cpumask_complement ${LINUX_HDR}/include/linux/cpumask.h > /dev/null ; th
+ else
+   echo no
+ fi
++echo -n "  checking (in kernel headers) cpus_complement() availability ... "
++if grep cpus_complement ${LINUX_HDR}/include/linux/cpumask.h > /dev/null ; then
++  echo "#define KNEM_HAVE_CPUS_COMPLEMENT 1" >> ${TMP_CHECKS_NAME}
++  echo yes
++else
++  echo no
++fi
++
++# cpumask_setall deprecates cpus_setall in 2.6.28
++echo -n "  checking (in kernel headers) cpumask_setall() availability ... "
++if grep cpumask_setall ${LINUX_HDR}/include/linux/cpumask.h > /dev/null ; then
++  echo "#define KNEM_HAVE_CPUMASK_SETALL 1" >> ${TMP_CHECKS_NAME}
++  echo yes
++else
++  echo no
++fi
++
+ 
+ # set_cpus_allowed_ptr added in 2.6.26, and set_cpus_allowed dropped in 2.6.34
+ # set_cpus_allowed_ptr backported in redhat 5 kernels but not exported to modules
+diff --git a/driver/linux/knem_hal.h b/driver/linux/knem_hal.h
+index 44dc41a..cee1f6b 100644
+--- a/driver/linux/knem_hal.h
++++ b/driver/linux/knem_hal.h
+@@ -238,11 +238,19 @@ knem_unpin_user_page_dirty_lock(struct page *page, bool make_dirty)
+ }
+ #endif /* !KNEM_HAVE_UNPIN_USER_PAGES_DIRTY_LOCK */
+ 
+-#ifdef KNEM_HAVE_CPUMASK_COMPLEMENT
++/* Kernel 2.6.28 deprecates cpus_complement for cpumask_complement. Kernel 6.3 removes cpumask_complement. */
++#if defined KNEM_HAVE_CPUMASK_COMPLEMENT /* kernel 2.6.28 to 6.2 */
+ #define knem_cpumask_complement cpumask_complement
++#elif defined KNEM_HAVE_CPUS_COMPLEMENT /* kernel < 2.6.28 */
++#define knem_cpumask_complement(a,b) cpus_complement(*(a), *(b))
++#else /* kernel >= 6.3 */
++#define knem_cpumask_complement(a,b) bitmap_complement(cpumask_bits(a), cpumask_bits(b), nr_cpu_ids)
++#endif
++
++/* Kernel 2.6.28 deprecates cpus_setall for cpumask_setall. */
++#ifdef KNEM_HAVE_CPUMASK_SETALL
+ #define knem_cpumask_setall cpumask_setall
+ #else
+-#define knem_cpumask_complement(a,b) cpus_complement(*(a), *(b))
+ #define knem_cpumask_setall(m) cpus_setall(*(m))
+ #endif
+ 
+-- 
+GitLab
+
