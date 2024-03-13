@@ -187,6 +187,8 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
                 options.append(
                     "--with-{0}-compute-capability=sm_{1}".format(cuda_flag.upper(), cuda_arch)
                 )
+
+            options.append("NVCCFLAGS=-D__GNUC__=10")
         else:
             options.append("--disable-{0}".format(cuda_flag))
 
