@@ -176,6 +176,12 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
                 options.append(
                     "--with-{0}-compute-capability=sm_{1}".format(cuda_flag.upper(), cuda_arch)
                 )
+
+            # CUDA 11.4 pretends to support GCC 11, but in fact does not.  So if
+            # CUDA is 11.4 or less and GCC is newer than 10 we pretend that we
+            # only have GCC 10.
+            if spec["cuda"].version < Version("11.5") and spec.compiler.version > Version("10"):
+                options.append("NVCCFLAGS=-D__GNUC__=10")
         else:
             options.append("--disable-{0}".format(cuda_flag))
 
