@@ -8,6 +8,83 @@ from spack.package import *
 
 versions = [
     {
+        "version": "2024.2.0",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/6780ac84-6256-4b59-a647-330eb65f32b6/l_dpcpp-cpp-compiler_p_2024.2.0.495_offline.sh",
+            "sha256": "9463aa979314d2acc51472d414ffcee032e9869ca85ac6ff4c71d39500e5173d",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/801143de-6c01-4181-9911-57e00fe40181/l_fortran-compiler_p_2024.2.0.426_offline.sh",
+            "sha256": "fd19a302662b2f86f76fc115ef53a69f16488080278dba4c573cc705f3a52ffa",
+        },
+    },
+    {
+        "version": "2024.1.0",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/2e562b6e-5d0f-4001-8121-350a828332fb/l_dpcpp-cpp-compiler_p_2024.1.0.468_offline.sh",
+            "sha256": "534ecc6e4b690c9011d7765cbe178f520aa8f49c0eb4ea80ea1415e48e5d7cf7",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/fd9342bd-7d50-442c-a3e4-f41974e14396/l_fortran-compiler_p_2024.1.0.465_offline.sh",
+            "sha256": "30a02bad9a96a543c60f3bfa4238dfe07c2d26d76fc22ba9aa9b7c603e11f1b9",
+        },
+    },
+    {
+        "version": "2024.0.2",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/bb99984f-370f-413d-bbec-38928d2458f2/l_dpcpp-cpp-compiler_p_2024.0.2.29_offline.sh",
+            "sha256": "0ec22d69f4207fea4b7488d1c9e62adbc14fb6daa1574d6edcadc912da007b3c",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/41df6814-ec4b-4698-a14d-421ee2b02aa7/l_fortran-compiler_p_2024.0.2.28_offline.sh",
+            "sha256": "396ac4fbcb3799d5c1a866a60cf81f85f7cab8c6f35289f61c5cda63c7101b5e",
+        },
+    },
+    {
+        "version": "2024.0.1",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm//IRC_NAS/c68c8f0a-47f5-4f26-8e8e-fa2627271279/l_dpcpp-cpp-compiler_p_2024.0.1.29_offline.sh",
+            "sha256": "22497c46bfb916c82677489775c113141510423799b7eca35f35dffeb2a14104",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm//IRC_NAS/4eedf77e-e097-40de-b62d-5fb70efecb59/l_fortran-compiler_p_2024.0.1.31_offline.sh",
+            "sha256": "9d49ecc1862c60eb0627bfdd80d63a47118095af0ff5adeeda10ec36aaffc82c",
+        },
+    },
+    {
+        "version": "2024.0.0",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm//IRC_NAS/5c8e686a-16a7-4866-b585-9cf09e97ef36/l_dpcpp-cpp-compiler_p_2024.0.0.49524_offline.sh",
+            "sha256": "d10bad2009c98c631fbb834aae62012548daeefc806265ea567316cd9180a684",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm//IRC_NAS/89b0fcf9-5c00-448a-93a1-5ee4078e008e/l_fortran-compiler_p_2024.0.0.49493_offline.sh",
+            "sha256": "57faf854b8388547ee4ef2db387a9f6f3b4d0cebd67b765cf5e844a0a970d1f9",
+        },
+    },
+    {
+        "version": "2023.2.4",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/b00a4b0e-bd21-41fa-ab34-19e8e2a77c5a/l_dpcpp-cpp-compiler_p_2023.2.4.24_offline.sh",
+            "sha256": "f143a764adba04a41e49ec405856ad781e5c3754812e90a7ffe06d08cd07f684",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/5bfaa204-689d-4bf1-9656-e37e35ea3fc2/l_fortran-compiler_p_2023.2.4.31_offline.sh",
+            "sha256": "2f327d67cd207399b327df5b7c912baae800811d0180485ef5431f106686c94b",
+        },
+    },
+    {
+        "version": "2023.2.3",
+        "cpp": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/d85fbeee-44ec-480a-ba2f-13831bac75f7/l_dpcpp-cpp-compiler_p_2023.2.3.12_offline.sh",
+            "sha256": "b80119a3e54306b85198e907589b00b11c072f107ac39c1686a1996f76466b26",
+        },
+        "ftn": {
+            "url": "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/0ceccee5-353c-4fd2-a0cc-0aecb7492f87/l_fortran-compiler_p_2023.2.3.13_offline.sh",
+            "sha256": "ef8d95b7165d42da8576bf89a100bd21be7253d0aec039ff76c9213fa2aa9c62",
+        },
+    },
+    {
         "version": "2023.2.1",
         "cpp": {
             "url": "https://registrationcenter-download.intel.com/akdlm//IRC_NAS/ebf5d9aa-17a7-46a4-b5df-ace004227c0e/l_dpcpp-cpp-compiler_p_2023.2.1.8_offline.sh",
