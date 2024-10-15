@@ -269,6 +269,8 @@ class Cmake(Package):
         when="@3.19.0:3.19",
     )
 
+    patch("glibc-2.36-libarchive-1.patch", when="@3.26.3")
+
     conflicts("+qt", when="^qt@5.4.0")  # qt-5.4.0 has broken CMake modules
 
     # https://gitlab.kitware.com/cmake/cmake/issues/18166
