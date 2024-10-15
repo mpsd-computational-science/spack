@@ -190,6 +190,8 @@ class Cmake(Package):
         when="@3.15.5",
     )
 
+    patch("glibc-2.36-libarchive-1.patch", when="@:3.26.3")
+
     depends_on("ninja", when="platform=windows")
 
     # We default ownlibs to true because it greatly speeds up the CMake

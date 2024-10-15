@@ -37,6 +37,8 @@ class Knem(AutotoolsPackage):
         when="@1.1.4",
     )
 
+    patch("cpus_cpumask.patch", when="@:1.1.4")
+
     depends_on("hwloc", when="+hwloc")
     depends_on("pkgconfig", type="build", when="+hwloc")
     depends_on("autoconf", type="build", when="@master")
@@ -58,7 +60,9 @@ class Knem(AutotoolsPackage):
         make.add_default_arg("CC={0}".format(spack_cc))
 
     def configure_args(self):
-        return self.enable_or_disable("hwloc")
+        args = self.enable_or_disable("hwloc")
+        args.extend(["KBUILD_ARGS=CONFIG_INIT_STACK_ALL_ZERO= CONFIG_INIT_STACK_ALL_PATTERN="])
+        return args
 
     @when("@master")
     def autoreconf(self, spec, prefix):
