@@ -10,6 +10,9 @@ from spack.package import *
 from spack.util.environment import EnvironmentModifications
 
 _versions = {
+    "24.11.2-1": {
+        "Linux-x86_64": ("c79c7326a846d6df9ec824e19ccc99454d8f5009e37888df301b23eef11280ca",)
+    },
     "24.9.2-0": {
         "Linux-x86_64": ("ca8c544254c40ae5192eb7db4e133ff4eb9f942a1fec737dba8205ac3f626322",)
     },
