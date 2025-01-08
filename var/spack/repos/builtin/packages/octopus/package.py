@@ -24,6 +24,7 @@ class Octopus(CMakePackage, AutotoolsPackage, CudaPackage):
 
     license("Apache-2.0")
 
+    version("15.1", sha256="6c4deb535ddfcdcdf6f26764b38fb1ad05faa9b418ec18d5d93f8d1040165bda")
     version("15.0", sha256="1e37bcd3239d5519f69997d2525b01d3e99899f1e09647cd43904fdce80891a2")
     version("14.1", sha256="6955f4020e69f038650a24509ff19ef35de4fd34e181539f92fa432db9b66ca7")
     version("14.0", sha256="3cf6ef571ff97cc2c226016815d2ac4aa1e00ae3fb0cc693e0aff5620b80373e")
