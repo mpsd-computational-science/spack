@@ -49,7 +49,7 @@ class Octopus(CMakePackage, AutotoolsPackage, CudaPackage):
 
     def url_for_version(self, version):
         """Compression algorithm changed from gz to xz in version 15."""
-        compression = "xz" if version.satisfies("@15:") else "gz"
+        compression = "xz" if version.satisfies("@16:") else "gz"
         return f"https://octopus-code.org/download/{version}/octopus-{version}.tar.{compression}"
 
     build_system(
