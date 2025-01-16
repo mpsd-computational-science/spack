@@ -90,6 +90,8 @@ class Cgal(CMakePackage):
         msg="Header only builds became optional in 4.9," " default thereafter",
     )
 
+    patch("intersections-boost.patch", when="@5.5.2")
+
     def url_for_version(self, version):
         url = "https://github.com/CGAL/cgal/releases/download/"
         if version <= Version("5.0.3"):

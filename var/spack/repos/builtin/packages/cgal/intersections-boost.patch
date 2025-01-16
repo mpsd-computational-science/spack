@@ -1,0 +1,12 @@
+diff --git a/include/CGAL/Intersections_3/internal/Plane_3_Triangle_3_intersection.h b/include/CGAL/Intersections_3/internal/Plane_3_Triangle_3_intersection.h
+index bf6d668321e596051bfbc1955fa8915b754d8278..6c223a393434afb2a2ddf01e10f19673ebf9140e 100644
+--- a/include/CGAL/Intersections_3/internal/Plane_3_Triangle_3_intersection.h
++++ b/include/CGAL/Intersections_3/internal/Plane_3_Triangle_3_intersection.h
+@@ -18,6 +18,7 @@
+ 
+ #include <CGAL/enum.h>
+ #include <CGAL/kernel_assertions.h>
++#include <boost/next_prior.hpp>
+ 
+ namespace CGAL {
+ namespace Intersections {
