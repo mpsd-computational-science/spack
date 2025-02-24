@@ -135,7 +135,7 @@ class Dftbplus(CMakePackage, MakefilePackage):
     )
 
     depends_on("cmake@3.16:", type="build", when="@20.1:")
-    depends_on("ninja@1.10", type="build", when="@20.1:")
+    depends_on("ninja@1.10:", type="build", when="@20.1:")
 
     depends_on("blas", when="-mpi")
     depends_on("lapack", when="-mpi")
