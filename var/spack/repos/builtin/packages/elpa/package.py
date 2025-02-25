@@ -65,6 +65,7 @@ class Elpa(AutotoolsPackage, CudaPackage, ROCmPackage):
         )
 
     patch("fujitsu.patch", when="%fj")
+    patch("manual-cpp.patch")
 
     depends_on("autoconf@2.71:", type="build", when="@master")
     depends_on("automake", type="build", when="@master")

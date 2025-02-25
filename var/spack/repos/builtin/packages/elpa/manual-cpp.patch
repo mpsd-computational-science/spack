@@ -1,0 +1,15 @@
+diff --git a/manual_cpp b/manual_cpp
+index 6f74a79..c84a2d5 100755
+--- a/manual_cpp
++++ b/manual_cpp
+@@ -55,6 +55,10 @@ try:
+ except ValueError:
+     pass
+ 
++# a leading '-' in the restulting name leads to failing compilation
++# because the compiler interprets the argument as flag and not as file
++tmp_filename = tmp_filename.replace("-", "_")
++
+ tmp_filename = tmp_filename[-250:]
+ 
+ # preprocess
