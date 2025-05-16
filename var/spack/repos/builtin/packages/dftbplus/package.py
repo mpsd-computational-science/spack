@@ -42,6 +42,12 @@ class Dftbplus(CMakePackage, MakefilePackage):
         sha256="78f45ef0571c78cf732a5493d32830455a832fa05ebcad43098895e46ad8d220",
     )
 
+    patch(
+        "https://github.com/dftbplus/dftbplus/commit/9b9c29d28117ea54487e4384a24b58eb47f1f65c.diff",
+        sha256="ac407f5fa3aa6361f5f281de90cf963c696a6814db790a9448d0cc35538eaf0f",
+        when="@:24.1",
+    )
+
     depends_on("c", type="build")  # generated
     depends_on("cxx", type="build")  # generated
     depends_on("fortran", type="build")  # generated
