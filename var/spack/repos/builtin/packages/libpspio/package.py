@@ -39,3 +39,11 @@ class Libpspio(AutotoolsPackage):
     def configure_args(self):
         args = self.enable_or_disable("fortran")
         return args
+
+    def flag_handler(self, name, flags):
+        if name == "cflags":
+            flags.append(self.compiler.cc_pic_flag)
+        if name == "fflags":
+            flags.append(self.compiler.f77_pic_flag)
+        return flags, None, None
+
