@@ -24,6 +24,11 @@ class Octopus(CMakePackage, AutotoolsPackage, CudaPackage):
 
     license("Apache-2.0")
 
+    version(
+        "16.2",
+        sha256="be3a361736b8367c24aaf80fa1b31066a3f3eddd7afef3fb6d84145c0413ee0c",
+        url="https://gitlab.com/octopus-code/octopus/-/archive/16.2/octopus-16.2.tar.gz",
+    )
     version("15.1", sha256="6c4deb535ddfcdcdf6f26764b38fb1ad05faa9b418ec18d5d93f8d1040165bda")
     version("15.0", sha256="1e37bcd3239d5519f69997d2525b01d3e99899f1e09647cd43904fdce80891a2")
     version("14.1", sha256="6955f4020e69f038650a24509ff19ef35de4fd34e181539f92fa432db9b66ca7")
